@@ -34,8 +34,8 @@ type Result struct {
 	Stderr string
 }
 
-// Cmd represents a command to be executed
-type Cmd struct {
+// Advcmd represents an advanced command to be executed
+type Advcmd struct {
 	// Cmd represents the command to execute to submit the job
 	Cmd *exec.Cmd
 
@@ -74,7 +74,7 @@ type Cmd struct {
 }
 
 // Run executes a syexec command and creates the appropriate manifest (when possible)
-func (c *Cmd) Run() Result {
+func (c *Advcmd) Run() Result {
 	var res Result
 
 	cmdTimeout := c.Timeout
