@@ -91,6 +91,7 @@ func (c *Advcmd) Run() Result {
 		c.Cmd.Dir = c.ExecDir
 		c.Cmd.Stdout = &stdout
 		c.Cmd.Stderr = &stderr
+		c.Cmd.Env = append(c.Cmd.Env, c.Env...)
 	}
 
 	log.Printf("-> Running %s %s\n", c.BinPath, strings.Join(c.CmdArgs, " "))
