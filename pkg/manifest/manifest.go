@@ -66,34 +66,51 @@ func Create(filepath string, entries []string) error {
 	return nil
 }
 
+// Load parses a manifest file and returns its content in a form of a map.
+// The first returned map is indexed on the file name, while the second one is
+// indexed on the hash
+func Load(path string) (map[string]string, map[string]string, error) {
+	if !util.FileExists(path) {
+		// This is currently not an error, just log the fact there is no manifest
+		return nil, nil, fmt.Errorf("%s does not exist", path)
+
+	}
+
+	h := make(map[string]string)
+	h2 := make(map[string]string)
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Printf("failed to read manifest %s", path)
+		return nil, nil, err
+	}
+
+	content := string(data)
+	lines := strings.Split(content, "\n")
+	for _, line := range lines {
+		tokens := strings.Split(line, ": ")
+		if len(tokens) == 2 {
+			file := tokens[0]
+			recordedHash := tokens[1]
+			h[file] = recordedHash
+			h2[recordedHash] = file
+		}
+	}
+	return h, h2, nil
+}
+
 // Check parses a given manifest and check that all hash there are in the manifest are the same than current
 // files
 func Check(path string) error {
-	if !util.FileExists(path) {
-		// This is currently not an error, just log the fact there is no manifest
-		log.Printf("%s does not exist, skipping...", path)
+	data, _, err := Load(path)
+	if err != nil {
+		return err
 	}
 
-	if util.FileExists(path) {
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			log.Printf("failed to read manifest %s", path)
-			return nil // This is not a fatal error
-		}
-
-		content := string(data)
-		lines := strings.Split(content, "\n")
-		for _, line := range lines {
-			tokens := strings.Split(line, ": ")
-			if len(tokens) == 2 {
-				file := tokens[0]
-				recordedHash := tokens[1]
-				curFileHash := HashFiles([]string{file})
-				if curFileHash[0] != line {
-					actualHash := strings.Split(curFileHash[0], ": ")[1]
-					return fmt.Errorf("hashes differ (record: %s; actual: %s)", recordedHash, actualHash)
-				}
-			}
+	for file, hash := range data {
+		curFileHash := HashFiles([]string{file})
+		if curFileHash[0] != hash {
+			actualHash := strings.Split(curFileHash[0], ": ")[1]
+			return fmt.Errorf("hashes differ (record: %s; actual: %s)", hash, actualHash)
 		}
 	}
 
