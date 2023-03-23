@@ -6,9 +6,11 @@
 package advexec
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestExecWithEnv(t *testing.T) {
@@ -27,5 +29,25 @@ func TestExecWithEnv(t *testing.T) {
 
 	if !strings.Contains(res.Stdout, dummyEnv) {
 		t.Fatalf("%s does not containt %s", res.Stdout, dummyEnv)
+	}
+}
+
+func TestExecTimeout(t *testing.T) {
+	var c Advcmd
+	var err error
+
+	c.BinPath, err = exec.LookPath("sleep")
+	if err != nil {
+		t.Fatalf("unable to find sleep")
+	}
+	c.CmdArgs = append(c.CmdArgs, "10")
+	// Set a timeout of 5 seconds
+	timeoutValue := int(5)
+	c.Timeout = time.Duration(timeoutValue * 1000000000)
+	res := c.Run()
+	if res.Err != nil {
+		fmt.Printf("Timeout detected! %s\n", res.Err)
+	} else {
+		t.Fatalf("Timeout not detected")
 	}
 }
