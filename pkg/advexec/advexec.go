@@ -79,10 +79,10 @@ func (c *Advcmd) Run() Result {
 
 	cmdTimeout := c.Timeout
 	if cmdTimeout == 0 {
-		cmdTimeout = CmdTimeout
+		cmdTimeout = CmdTimeout * time.Minute
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), cmdTimeout*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), cmdTimeout)
 	defer cancel()
 
 	var stderr, stdout bytes.Buffer
