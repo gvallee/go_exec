@@ -6,13 +6,19 @@
 
 package remote
 
-import "testing"
+import (
+	"os/exec"
+	"testing"
+)
 
 func TestRemoteCmd(t *testing.T) {
-	cmd := "/usr/bin/date"
+	cmd, err := exec.LookPath("date")
+	if err != nil {
+		t.Skip("'date' command not available, skipping...")
+	}
 	host := "localhost"
-	err := ExecCmd(host, cmd, nil, nil)
-	if err.Err != nil {
+	res := ExecCmd(host, cmd, nil, nil)
+	if res.Err != nil {
 		t.Fatalf("unable to run %s on %s", cmd, host)
 	}
 }
