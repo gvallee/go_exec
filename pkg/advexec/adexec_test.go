@@ -6,7 +6,6 @@
 package advexec
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 	"testing"
@@ -45,7 +44,7 @@ func TestExecTimeout(t *testing.T) {
 	c.Timeout = 5 * time.Second
 	res := c.Run()
 	if res.Err != nil {
-		fmt.Printf("Timeout detected! %s\n", res.Err)
+		t.Logf("Timeout detected: %s", res.Err)
 	} else {
 		t.Fatalf("Timeout not detected")
 	}
