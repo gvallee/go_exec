@@ -38,9 +38,6 @@ func Load(outputFile string) ([]Result, error) {
 	defer f.Close()
 
 	lineReader := bufio.NewScanner(f)
-	if lineReader == nil {
-		return existingResults, fmt.Errorf("failed to create file reader")
-	}
 
 	for lineReader.Scan() {
 		line := lineReader.Text()
