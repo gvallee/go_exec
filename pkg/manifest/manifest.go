@@ -120,6 +120,10 @@ func Check(path string) error {
 		}
 
 		actualHash := tokens[1]
+		if actualHash == "" {
+			return fmt.Errorf("unable to compute hash for %s", file)
+		}
+
 		if actualHash != hash {
 			return fmt.Errorf("hashes differ (record: %s; actual: %s)", hash, actualHash)
 		}
