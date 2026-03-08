@@ -38,7 +38,7 @@ func TestExecTimeout(t *testing.T) {
 
 	c.BinPath, err = exec.LookPath("sleep")
 	if err != nil {
-		t.Fatalf("unable to find sleep")
+		t.Skip("'sleep' command not available, skipping...")
 	}
 	c.CmdArgs = append(c.CmdArgs, "10")
 	// Set a timeout of 5 seconds
