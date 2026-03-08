@@ -1,6 +1,7 @@
 // Copyright (c) 2019, Sylabs Inc. All rights reserved.
+// Copyright (c) 2026, NVIDIA CORPORATION. All rights reserved.
 // This software is licensed under a 3-clause BSD license. Please consult the
-// LICENSE.md file distributed with the sources of this project regarding your
+// LICENSE file distributed with the sources of this project regarding your
 // rights to use or distribute this software.
 
 package manifest
@@ -52,6 +53,7 @@ func Create(filepath string, entries []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create %s: %s", filepath, err)
 	}
+	defer f.Close()
 
 	_, err = f.WriteString(strings.Join(entries, "\n"))
 	if err != nil {
