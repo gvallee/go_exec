@@ -46,10 +46,11 @@ func Load(outputFile string) ([]Result, error) {
 		}
 
 		var newResult Result
-		if strings.Contains(line, "PASS") {
-			newResult.Pass = true
-		} else {
-			newResult.Pass = false
+		for _, token := range strings.Fields(line) {
+			if token == "PASS" {
+				newResult.Pass = true
+				break
+			}
 		}
 		existingResults = append(existingResults, newResult)
 	}
