@@ -1,6 +1,7 @@
 // Copyright (c) 2019, Sylabs Inc. All rights reserved.
+// Copyright (c) 2026, NVIDIA CORPORATION. All rights reserved.
 // This software is licensed under a 3-clause BSD license. Please consult the
-// LICENSE.md file distributed with the sources of this project regarding your
+// LICENSE file distributed with the sources of this project regarding your
 // rights to use or distribute this software.
 
 package manifest
@@ -17,6 +18,20 @@ import (
 
 	"github.com/gvallee/go_util/pkg/util"
 )
+
+func isSHA256Hash(s string) bool {
+	if len(s) != 64 {
+		return false
+	}
+
+	for _, c := range s {
+		if (c < '0' || c > '9') && (c < 'a' || c > 'f') {
+			return false
+		}
+	}
+
+	return true
+}
 
 func getFileHash(path string) string {
 	f, err := os.Open(path)
@@ -52,6 +67,7 @@ func Create(filepath string, entries []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create %s: %s", filepath, err)
 	}
+	defer f.Close()
 
 	_, err = f.WriteString(strings.Join(entries, "\n"))
 	if err != nil {
@@ -87,7 +103,7 @@ func Load(path string) (map[string]string, map[string]string, error) {
 	content := string(data)
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
-		tokens := strings.Split(line, ": ")
+		tokens := strings.SplitN(line, ": ", 2)
 		if len(tokens) == 2 {
 			file := tokens[0]
 			recordedHash := tokens[1]
@@ -107,9 +123,26 @@ func Check(path string) error {
 	}
 
 	for file, hash := range data {
+		if !isSHA256Hash(hash) {
+			continue
+		}
+
 		curFileHash := HashFiles([]string{file})
-		if curFileHash[0] != hash {
-			actualHash := strings.Split(curFileHash[0], ": ")[1]
+		if len(curFileHash) != 1 {
+			return fmt.Errorf("unable to hash file %s", file)
+		}
+
+		tokens := strings.SplitN(curFileHash[0], ": ", 2)
+		if len(tokens) != 2 {
+			return fmt.Errorf("unable to parse hash output for %s", file)
+		}
+
+		actualHash := tokens[1]
+		if actualHash == "" {
+			return fmt.Errorf("unable to compute hash for %s", file)
+		}
+
+		if actualHash != hash {
 			return fmt.Errorf("hashes differ (record: %s; actual: %s)", hash, actualHash)
 		}
 	}

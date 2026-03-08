@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023, NVIDIA CORPORATION. All rights reserved.
+// Copyright (c) 2023-2026, NVIDIA CORPORATION. All rights reserved.
 //
-// See LICENSE.txt for license information
+// See LICENSE file for license information
 //
 
 package remote
@@ -15,6 +15,26 @@ import (
 )
 
 func ExecCmd(host, binPath string, args []string, env []string) advexec.Result {
+	host = strings.TrimSpace(host)
+	if host == "" {
+		var newErr advexec.Result
+		newErr.Err = fmt.Errorf("host cannot be empty")
+		return newErr
+	}
+
+	if strings.ContainsAny(host, " \t\n\r") {
+		var newErr advexec.Result
+		newErr.Err = fmt.Errorf("host cannot contain whitespace")
+		return newErr
+	}
+
+	binPath = strings.TrimSpace(binPath)
+	if binPath == "" {
+		var newErr advexec.Result
+		newErr.Err = fmt.Errorf("binPath cannot be empty")
+		return newErr
+	}
+
 	sshBinPath, err := exec.LookPath("ssh")
 	if err != nil {
 		var newErr advexec.Result

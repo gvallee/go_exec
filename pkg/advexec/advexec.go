@@ -9,6 +9,7 @@ package advexec
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -77,6 +78,11 @@ type Advcmd struct {
 func (c *Advcmd) Run() Result {
 	var res Result
 
+	if strings.TrimSpace(c.BinPath) == "" {
+		res.Err = fmt.Errorf("bin path cannot be empty")
+		return res
+	}
+
 	cmdTimeout := c.Timeout
 	if cmdTimeout == 0 {
 		cmdTimeout = CmdTimeout * time.Minute
@@ -88,9 +94,15 @@ func (c *Advcmd) Run() Result {
 	var stderr, stdout bytes.Buffer
 	if c.Cmd == nil {
 		c.Cmd = exec.CommandContext(ctx, c.BinPath, c.CmdArgs...)
-		c.Cmd.Stdout = &stdout
-		c.Cmd.Stderr = &stderr
 		c.Cmd.Env = append(c.Cmd.Env, c.Env...)
+	}
+
+	if c.Cmd.Stdout == nil {
+		c.Cmd.Stdout = &stdout
+	}
+
+	if c.Cmd.Stderr == nil {
+		c.Cmd.Stderr = &stderr
 	}
 
 	if c.Cmd.Dir == "" {
@@ -127,10 +139,11 @@ func (c *Advcmd) Run() Result {
 			data = append(data, c.ManifestData...)
 
 			// We transform relative paths into absolute path
-			if strings.HasPrefix(c.BinPath, "./") {
-				c.BinPath = filepath.Join(c.ExecDir, c.BinPath[2:])
+			binPath := c.BinPath
+			if strings.HasPrefix(binPath, "./") {
+				binPath = filepath.Join(c.ExecDir, binPath[2:])
 			}
-			filesToHash := []string{c.BinPath} // we always get the fingerprint of the binary we execute
+			filesToHash := []string{binPath} // we always get the fingerprint of the binary we execute
 			filesToHash = append(filesToHash, c.ManifestFileHash...)
 			hashData := manifest.HashFiles(filesToHash)
 			data = append(data, hashData...)
@@ -143,7 +156,7 @@ func (c *Advcmd) Run() Result {
 			log.Printf("-> Manifest successfully created (%s)", path)
 
 		} else {
-			log.Printf("Manifest %s already exists, skipping...", err)
+			log.Printf("Manifest %s already exists, skipping...", path)
 		}
 	}
 
