@@ -1,6 +1,6 @@
-// Copyright (c) 2021, NVIDIA CORPORATION. All rights reserved.
+// Copyright (c) 2021-2026, NVIDIA CORPORATION. All rights reserved.
 // This software is licensed under a 3-clause BSD license. Please consult the
-// LICENSE.md file distributed with the sources of this project regarding your
+// LICENSE file distributed with the sources of this project regarding your
 // rights to use or distribute this software.
 
 package advexec
@@ -42,8 +42,7 @@ func TestExecTimeout(t *testing.T) {
 	}
 	c.CmdArgs = append(c.CmdArgs, "10")
 	// Set a timeout of 5 seconds
-	timeoutValue := int(5)
-	c.Timeout = time.Duration(timeoutValue * 1000000000)
+	c.Timeout = 5 * time.Second
 	res := c.Run()
 	if res.Err != nil {
 		fmt.Printf("Timeout detected! %s\n", res.Err)
