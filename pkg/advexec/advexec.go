@@ -127,10 +127,11 @@ func (c *Advcmd) Run() Result {
 			data = append(data, c.ManifestData...)
 
 			// We transform relative paths into absolute path
-			if strings.HasPrefix(c.BinPath, "./") {
-				c.BinPath = filepath.Join(c.ExecDir, c.BinPath[2:])
+			binPath := c.BinPath
+			if strings.HasPrefix(binPath, "./") {
+				binPath = filepath.Join(c.ExecDir, binPath[2:])
 			}
-			filesToHash := []string{c.BinPath} // we always get the fingerprint of the binary we execute
+			filesToHash := []string{binPath} // we always get the fingerprint of the binary we execute
 			filesToHash = append(filesToHash, c.ManifestFileHash...)
 			hashData := manifest.HashFiles(filesToHash)
 			data = append(data, hashData...)
@@ -143,7 +144,7 @@ func (c *Advcmd) Run() Result {
 			log.Printf("-> Manifest successfully created (%s)", path)
 
 		} else {
-			log.Printf("Manifest %s already exists, skipping...", err)
+			log.Printf("Manifest %s already exists, skipping...", path)
 		}
 	}
 
