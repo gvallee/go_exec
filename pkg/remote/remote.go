@@ -22,6 +22,12 @@ func ExecCmd(host, binPath string, args []string, env []string) advexec.Result {
 		return newErr
 	}
 
+	if strings.ContainsAny(host, " \t\n\r") {
+		var newErr advexec.Result
+		newErr.Err = fmt.Errorf("host cannot contain whitespace")
+		return newErr
+	}
+
 	binPath = strings.TrimSpace(binPath)
 	if binPath == "" {
 		var newErr advexec.Result
