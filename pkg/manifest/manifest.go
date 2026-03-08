@@ -89,7 +89,7 @@ func Load(path string) (map[string]string, map[string]string, error) {
 	content := string(data)
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
-		tokens := strings.Split(line, ": ")
+		tokens := strings.SplitN(line, ": ", 2)
 		if len(tokens) == 2 {
 			file := tokens[0]
 			recordedHash := tokens[1]
