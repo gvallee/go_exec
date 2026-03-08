@@ -27,7 +27,7 @@ func TestExecWithEnv(t *testing.T) {
 	}
 
 	if !strings.Contains(res.Stdout, dummyEnv) {
-		t.Fatalf("%s does not containt %s", res.Stdout, dummyEnv)
+		t.Fatalf("%s does not contain %s", res.Stdout, dummyEnv)
 	}
 }
 
