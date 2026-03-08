@@ -1,7 +1,7 @@
 // Copyright (c) 2019, Sylabs Inc. All rights reserved.
-// Copyright (c) 2021, NVIDIA CORPORATION. All rights reserved.
+// Copyright (c) 2021-2026, NVIDIA CORPORATION. All rights reserved.
 // This software is licensed under a 3-clause BSD license. Please consult the
-// LICENSE.md file distributed with the sources of this project regarding your
+// LICENSE file distributed with the sources of this project regarding your
 // rights to use or distribute this software.
 
 package advexec
@@ -127,7 +127,7 @@ func (c *Advcmd) Run() Result {
 			data = append(data, c.ManifestData...)
 
 			// We transform relative paths into absolute path
-			if c.BinPath[0] == '.' && c.BinPath[1] == '/' {
+			if strings.HasPrefix(c.BinPath, "./") {
 				c.BinPath = filepath.Join(c.ExecDir, c.BinPath[2:])
 			}
 			filesToHash := []string{c.BinPath} // we always get the fingerprint of the binary we execute
