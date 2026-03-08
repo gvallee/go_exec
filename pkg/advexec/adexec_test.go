@@ -6,7 +6,9 @@
 package advexec
 
 import (
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -47,5 +49,41 @@ func TestExecTimeout(t *testing.T) {
 		t.Logf("Timeout detected: %s", res.Err)
 	} else {
 		t.Fatalf("Timeout not detected")
+	}
+}
+
+func TestEmptyBinPath(t *testing.T) {
+	var c Advcmd
+	res := c.Run()
+	if res.Err == nil {
+		t.Fatalf("expected error for empty bin path")
+	}
+}
+
+func TestExecCreateManifest(t *testing.T) {
+	echoBin, err := exec.LookPath("echo")
+	if err != nil {
+		t.Skip("'echo' command not available, skipping...")
+	}
+
+	execDir := t.TempDir()
+	manifestDir := t.TempDir()
+
+	var c Advcmd
+	c.BinPath = echoBin
+	c.CmdArgs = []string{"hello"}
+	c.ExecDir = execDir
+	c.ManifestDir = manifestDir
+	c.ManifestName = "myexec"
+	c.ManifestData = []string{"Meta: value"}
+
+	res := c.Run()
+	if res.Err != nil {
+		t.Fatalf("execution failed: %s", res.Err)
+	}
+
+	manifestPath := filepath.Join(manifestDir, "myexec.MANIFEST")
+	if _, statErr := os.Stat(manifestPath); statErr != nil {
+		t.Fatalf("manifest was not created: %s", statErr)
 	}
 }
