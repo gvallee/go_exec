@@ -28,8 +28,12 @@ func Load(outputFile string) ([]Result, error) {
 
 	f, err := os.Open(outputFile)
 	if err != nil {
-		// No result file, it is okay
-		return existingResults, nil
+		if os.IsNotExist(err) {
+			// No result file, it is okay
+			return existingResults, nil
+		}
+
+		return nil, fmt.Errorf("failed to open %s: %w", outputFile, err)
 	}
 	defer f.Close()
 
