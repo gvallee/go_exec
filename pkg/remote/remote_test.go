@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"strings"
 	"testing"
+
+	goerrs "github.com/gvallee/go_errs/pkg/goerrs"
 )
 
 func TestRemoteCmd(t *testing.T) {
@@ -45,14 +47,23 @@ func TestRemoteCmdValidation(t *testing.T) {
 	if res.Err == nil {
 		t.Fatalf("expected error for empty host")
 	}
+	if !goerrs.IsCode(res.Err, "invalid_input") {
+		t.Fatalf("expected invalid_input code, got: %v", res.Err)
+	}
 
 	res = ExecCmd("bad host", "/bin/true", nil, nil)
 	if res.Err == nil {
 		t.Fatalf("expected error for host with whitespace")
 	}
+	if !goerrs.IsCode(res.Err, "invalid_input") {
+		t.Fatalf("expected invalid_input code, got: %v", res.Err)
+	}
 
 	res = ExecCmd("localhost", "", nil, nil)
 	if res.Err == nil {
 		t.Fatalf("expected error for empty binPath")
+	}
+	if !goerrs.IsCode(res.Err, "invalid_input") {
+		t.Fatalf("expected invalid_input code, got: %v", res.Err)
 	}
 }
