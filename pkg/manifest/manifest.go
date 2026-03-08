@@ -108,8 +108,17 @@ func Check(path string) error {
 
 	for file, hash := range data {
 		curFileHash := HashFiles([]string{file})
-		if curFileHash[0] != hash {
-			actualHash := strings.Split(curFileHash[0], ": ")[1]
+		if len(curFileHash) != 1 {
+			return fmt.Errorf("unable to hash file %s", file)
+		}
+
+		tokens := strings.SplitN(curFileHash[0], ": ", 2)
+		if len(tokens) != 2 {
+			return fmt.Errorf("unable to parse hash output for %s", file)
+		}
+
+		actualHash := tokens[1]
+		if actualHash != hash {
 			return fmt.Errorf("hashes differ (record: %s; actual: %s)", hash, actualHash)
 		}
 	}
