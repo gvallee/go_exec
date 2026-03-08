@@ -49,5 +49,9 @@ func Load(outputFile string) ([]Result, error) {
 		existingResults = append(existingResults, newResult)
 	}
 
+	if lineReader.Err() != nil {
+		return nil, fmt.Errorf("failed to scan %s: %w", outputFile, lineReader.Err())
+	}
+
 	return existingResults, nil
 }
