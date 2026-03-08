@@ -94,9 +94,15 @@ func (c *Advcmd) Run() Result {
 	var stderr, stdout bytes.Buffer
 	if c.Cmd == nil {
 		c.Cmd = exec.CommandContext(ctx, c.BinPath, c.CmdArgs...)
-		c.Cmd.Stdout = &stdout
-		c.Cmd.Stderr = &stderr
 		c.Cmd.Env = append(c.Cmd.Env, c.Env...)
+	}
+
+	if c.Cmd.Stdout == nil {
+		c.Cmd.Stdout = &stdout
+	}
+
+	if c.Cmd.Stderr == nil {
+		c.Cmd.Stderr = &stderr
 	}
 
 	if c.Cmd.Dir == "" {
