@@ -19,6 +19,20 @@ import (
 	"github.com/gvallee/go_util/pkg/util"
 )
 
+func isSHA256Hash(s string) bool {
+	if len(s) != 64 {
+		return false
+	}
+
+	for _, c := range s {
+		if (c < '0' || c > '9') && (c < 'a' || c > 'f') {
+			return false
+		}
+	}
+
+	return true
+}
+
 func getFileHash(path string) string {
 	f, err := os.Open(path)
 	if err != nil {
@@ -109,6 +123,10 @@ func Check(path string) error {
 	}
 
 	for file, hash := range data {
+		if !isSHA256Hash(hash) {
+			continue
+		}
+
 		curFileHash := HashFiles([]string{file})
 		if len(curFileHash) != 1 {
 			return fmt.Errorf("unable to hash file %s", file)
