@@ -9,6 +9,7 @@ package advexec
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -76,6 +77,11 @@ type Advcmd struct {
 // Run executes a syexec command and creates the appropriate manifest (when possible)
 func (c *Advcmd) Run() Result {
 	var res Result
+
+	if strings.TrimSpace(c.BinPath) == "" {
+		res.Err = fmt.Errorf("bin path cannot be empty")
+		return res
+	}
 
 	cmdTimeout := c.Timeout
 	if cmdTimeout == 0 {
