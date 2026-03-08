@@ -15,12 +15,14 @@ import (
 )
 
 func ExecCmd(host, binPath string, args []string, env []string) advexec.Result {
+	host = strings.TrimSpace(host)
 	if host == "" {
 		var newErr advexec.Result
 		newErr.Err = fmt.Errorf("host cannot be empty")
 		return newErr
 	}
 
+	binPath = strings.TrimSpace(binPath)
 	if binPath == "" {
 		var newErr advexec.Result
 		newErr.Err = fmt.Errorf("binPath cannot be empty")
