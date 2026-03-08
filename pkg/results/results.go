@@ -41,6 +41,10 @@ func Load(outputFile string) ([]Result, error) {
 
 	for lineReader.Scan() {
 		line := lineReader.Text()
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+
 		var newResult Result
 		if strings.Contains(line, "PASS") {
 			newResult.Pass = true
