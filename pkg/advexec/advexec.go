@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gvallee/go_exec/pkg/manifest"
+	"github.com/gvallee/go_exec/v2/pkg/manifest"
 	"github.com/gvallee/go_util/pkg/util"
 )
 

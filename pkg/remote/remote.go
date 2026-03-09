@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	goerrs "github.com/gvallee/go_errs/pkg/goerrs"
-	"github.com/gvallee/go_exec/pkg/advexec"
+	"github.com/gvallee/go_exec/v2/pkg/advexec"
 )
 
 const (
